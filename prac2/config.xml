@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <package>beautifulsoup4</package>
+    <source>pypi</source>
+    <test_mode>false</test_mode>
+    <version>latest</version>
+    <output>graph.png</output>
+    <ascii_mode>false</ascii_mode>
+    <max_depth>3</max_depth>
+</config>
