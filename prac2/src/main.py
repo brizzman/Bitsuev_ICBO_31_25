@@ -1,15 +1,11 @@
 """Точка входа в приложение."""
 import sys
 from src.config import load_config, Config
-from src.fetcher import get_direct_dependencies
+from src.analyzer import build_transitive_graph, print_ascii_tree
 
 
 def print_config(config: Config) -> None:
-    """Вывод конфигурации в формате ключ-значение.
-
-    Args:
-        config: Объект конфигурации.
-    """
+    """Вывод конфигурации в формате ключ-значение."""
     print(f"package={config.package}")
     print(f"source={config.source}")
     print(f"test_mode={config.test_mode}")
@@ -30,13 +26,22 @@ def main() -> None:
         config = load_config(config_path)
         print_config(config)
         
-        print("\nDirect dependencies:")
-        deps = get_direct_dependencies(config)
-        if not deps:
-            print("(no dependencies found)")
-        for dep in deps:
-            print(f"- {dep}")
-            
+        print("\nBuilding dependency graph...")
+        graph = build_transitive_graph(config)
+        
+        if config.ascii_mode:
+            print("\nDependency Tree (ASCII):")
+            print_ascii_tree(graph, config.package)
+        else:
+            print("\nGraph edges:")
+            if not graph.graph:
+                print("(empty)")
+            for pkg, deps in graph.graph.items():
+                if not deps:
+                    print(f"{pkg} -> (no dependencies)")
+                for dep in deps:
+                    print(f"{pkg} -> {dep}")
+                    
     except ValueError as error:
         print(f"Error: {error}", file=sys.stderr)
         sys.exit(1)
