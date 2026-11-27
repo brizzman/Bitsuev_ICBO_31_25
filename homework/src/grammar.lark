@@ -1,0 +1,37 @@
+start: _NL* (statement _NL*)*
+?statement: var_decl | expr
+var_decl: "var" NAME ":=" expr
+
+// Значение может быть либо простым (atom), либо вычислением (eval_expr)
+?expr: atom | eval_expr
+
+// Простое значение: массив, строка, число или ссылка на переменную
+?atom: array | string | number | var_ref
+var_ref: NAME
+
+array: "({" _NL* "})"
+     | "({" _NL* expr (_sep expr)* _NL* "})"
+
+string: "q(" STRING_CONTENT? ")"
+STRING_CONTENT: /[^)]+/
+
+eval_expr: "?[" _NL* eval_inner _NL* "]"
+?eval_inner: add_expr | sub_expr | mul_expr | div_expr | len_expr | pow_expr | atom
+
+add_expr: "+" expr expr
+sub_expr: "-" expr expr
+mul_expr: "*" expr expr
+div_expr: "/" expr expr
+len_expr: "len" expr
+pow_expr: "pow" expr expr
+
+number: /[+-]?\d+\.\d+/
+NAME: /[a-z][a-z0-9_]*/
+MULTILINE_COMMENT: /\/\+((.|\n)*?)\+\//
+
+_sep: ("," | _NL)+
+_NL: (NEWLINE | MULTILINE_COMMENT)+
+NEWLINE: /\r?\n/
+
+%import common.WS_INLINE
+%ignore WS_INLINE
