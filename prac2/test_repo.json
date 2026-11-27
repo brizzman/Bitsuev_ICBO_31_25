@@ -1,5 +1,7 @@
 {
-    "packageA": ["packageB", "packageC"],
-    "packageB": ["packageD"],
-    "packageC": []
+    "A": ["B", "C"],
+    "B": ["D"],
+    "C": ["D", "E"],
+    "D": ["A"],
+    "E": []
 }

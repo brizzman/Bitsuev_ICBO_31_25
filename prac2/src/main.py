@@ -6,6 +6,7 @@ from src.analyzer import (
     print_ascii_tree,
     get_reverse_dependencies,
 )
+from src.visualizer import save_visualization
 
 
 def print_config(config: Config) -> None:
@@ -53,6 +54,9 @@ def main() -> None:
                     print(f"{pkg} -> (no dependencies)")
                 for dep in deps:
                     print(f"{pkg} -> {dep}")
+
+            print("\nVisualizing graph...")
+            save_visualization(graph, config.output)
 
     except ValueError as error:
         print(f"Error: {error}", file=sys.stderr)
