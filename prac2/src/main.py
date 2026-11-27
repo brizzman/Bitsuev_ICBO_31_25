@@ -1,7 +1,11 @@
 """Точка входа в приложение."""
 import sys
 from src.config import load_config, Config
-from src.analyzer import build_transitive_graph, print_ascii_tree
+from src.analyzer import (
+    build_transitive_graph,
+    print_ascii_tree,
+    get_reverse_dependencies,
+)
 
 
 def print_config(config: Config) -> None:
@@ -13,6 +17,7 @@ def print_config(config: Config) -> None:
     print(f"output={config.output}")
     print(f"ascii_mode={config.ascii_mode}")
     print(f"max_depth={config.max_depth}")
+    print(f"reverse={config.reverse}")
 
 
 def main() -> None:
@@ -25,11 +30,18 @@ def main() -> None:
     try:
         config = load_config(config_path)
         print_config(config)
-        
+
         print("\nBuilding dependency graph...")
         graph = build_transitive_graph(config)
-        
-        if config.ascii_mode:
+
+        if config.reverse:
+            print(f"\nReverse dependencies for {config.package}:")
+            rev_deps = get_reverse_dependencies(config.package, graph)
+            if not rev_deps:
+                print("(none found)")
+            for dep in rev_deps:
+                print(f"- {dep}")
+        elif config.ascii_mode:
             print("\nDependency Tree (ASCII):")
             print_ascii_tree(graph, config.package)
         else:
@@ -41,7 +53,7 @@ def main() -> None:
                     print(f"{pkg} -> (no dependencies)")
                 for dep in deps:
                     print(f"{pkg} -> {dep}")
-                    
+
     except ValueError as error:
         print(f"Error: {error}", file=sys.stderr)
         sys.exit(1)

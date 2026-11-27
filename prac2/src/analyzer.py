@@ -1,5 +1,6 @@
 """Модуль анализа графа зависимостей (DFS)."""
 from dataclasses import replace
+from typing import List
 from src.config import Config
 from src.graph import DependencyGraph
 from src.fetcher import get_direct_dependencies
@@ -56,6 +57,25 @@ def _dfs_build(
         _dfs_build(dep, current_depth + 1, config, graph, visited)
 
 
+def get_reverse_dependencies(
+    target_pkg: str, graph: DependencyGraph
+) -> List[str]:
+    """Поиск обратных зависимостей (кто зависит от target_pkg).
+
+    Args:
+        target_pkg: Имя пакета, для которого ищем зависимых.
+        graph: Построенный граф зависимостей.
+
+    Returns:
+        Список пакетов, которые прямо зависят от target_pkg.
+    """
+    reverse_deps = []
+    for pkg, deps in graph.graph.items():
+        if target_pkg in deps:
+            reverse_deps.append(pkg)
+    return reverse_deps
+
+
 def print_ascii_tree(graph: DependencyGraph, start_pkg: str) -> None:
     """Вывод графа в виде текстового ASCII-дерева.
 
@@ -85,13 +105,13 @@ def _print_branches(
     for index, dep in enumerate(deps):
         is_last = (index == len(deps) - 1)
         marker = "└── " if is_last else "├── "
-        
+
         if dep in visited:
             print(f"{prefix}{marker}{dep} (cycle)")
             continue
-            
+
         print(f"{prefix}{marker}{dep}")
-        
+
         next_prefix = prefix + ("    " if is_last else "│   ")
         next_visited = visited | {pkg}
         _print_branches(graph, dep, next_prefix, next_visited)

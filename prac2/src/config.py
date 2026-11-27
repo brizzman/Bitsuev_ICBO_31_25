@@ -1,5 +1,5 @@
 """Модуль конфигурации CLI-приложения (XML)."""
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 from dataclasses import dataclass
 from typing import Dict
 
@@ -17,6 +17,7 @@ class Config:
     output: str
     ascii_mode: bool
     max_depth: int
+    reverse: bool
 
 
 def _parse_bool(value: str) -> bool:
@@ -44,7 +45,7 @@ def _read_xml(filepath: str) -> Dict[str, str]:
         ValueError: Если файл не найден или поврежден.
     """
     try:
-        tree = ET.parse(filepath)
+        tree = et.parse(filepath)
         root = tree.getroot()
         data = {}
         for child in root:
@@ -87,6 +88,7 @@ def _build_config(data: Dict[str, str]) -> Config:
         output=data["output"],
         ascii_mode=_parse_bool(data.get("ascii_mode", "false")),
         max_depth=max_depth,
+        reverse=_parse_bool(data.get("reverse", "false")), 
     )
 
 
