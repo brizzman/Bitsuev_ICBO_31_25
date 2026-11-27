@@ -1,6 +1,7 @@
 """Точка входа в приложение."""
 import sys
 from src.config import load_config, Config
+from src.fetcher import get_direct_dependencies
 
 
 def print_config(config: Config) -> None:
@@ -21,13 +22,21 @@ def print_config(config: Config) -> None:
 def main() -> None:
     """Главная функция приложения."""
     if len(sys.argv) < 2:
-        print("Usage: .\run.bat <config.xml>", file=sys.stderr)
+        print("Usage: ./run.sh <config.xml>", file=sys.stderr)
         sys.exit(1)
 
     config_path = sys.argv[1]
     try:
         config = load_config(config_path)
         print_config(config)
+        
+        print("\nDirect dependencies:")
+        deps = get_direct_dependencies(config)
+        if not deps:
+            print("(no dependencies found)")
+        for dep in deps:
+            print(f"- {dep}")
+            
     except ValueError as error:
         print(f"Error: {error}", file=sys.stderr)
         sys.exit(1)

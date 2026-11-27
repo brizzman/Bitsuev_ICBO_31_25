@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <package>beautifulsoup4</package>
+    <package>flask</package>
     <source>pypi</source>
     <test_mode>false</test_mode>
     <version>latest</version>
